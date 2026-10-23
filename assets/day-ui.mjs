@@ -1,4 +1,4 @@
-import {generateOpening,dateLabel,nextStoryDate,WEATHER,parseStoryDate} from './day-engine.mjs?v=db08e1b5a45c';
+import {generateOpening,dateLabel,nextStoryDate,WEATHER,parseStoryDate} from './day-engine.mjs?v=eb9c0d202332';
 const $=id=>document.getElementById(id),KEY='amor-amizade-days-v1';
 let current=null,history=[];
 const fields={date:$('story-date'),time:$('story-time')};

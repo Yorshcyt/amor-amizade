@@ -18,3 +18,5 @@ Os arquivos usam identificadores de versão para evitar reaproveitar código ant
 
 Os arquivos continuam separados: index.html e a pasta assets. No computador, envie o conteúdo extraído do ZIP para a raiz do repositório, preservando a pasta assets, e faça Commit changes.
 Fisioterapia e Ciências Contábeis aparecem apenas no mapa da faculdade, com seus trajetos dentro do campus. Foram removidos os textos e os destinos desses cursos do mapa da cidade.
+
+Abertura do site: a cidade aparece inteira e sem trajetos, mesmo que houvesse uma seleção antiga. Escolha a origem e o destino para calcular. Na faculdade, o primeiro clique define a origem, o segundo o destino e os próximos continuam a caminhada.

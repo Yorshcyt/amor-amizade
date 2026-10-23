@@ -1,6 +1,6 @@
 // Walking paths traced on the approved 1536 × 1024 campus illustration.
 // Labels are roof locations; endpoints are the outdoor entrances, not roof centers.
-import {MAP as CITY_MAP} from './city-data.mjs?v=db08e1b5a45c';
+import {MAP as CITY_MAP} from './city-data.mjs?v=eb9c0d202332';
 // Matching touchline corners of the same football field in both illustrations.
 // The redraw slightly changes the aspect ratio, so calibrate each axis separately.
 export const CAMPUS_CALIBRATION={city:[[381,70],[440,107]],campus:[[512,158],[649,235]]};

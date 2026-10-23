@@ -1,34 +1,38 @@
-import {MAP,MODES,PLACES} from './city-data.mjs?v=db08e1b5a45c';
-import {estimateAll,rangeLabel,distanceLabel,routeNames} from './router.mjs?v=db08e1b5a45c';
-import {CAMPUS_MAP,CAMPUS_MODES,CAMPUS_PLACES} from './campus-data.mjs?v=db08e1b5a45c';
-import {estimateCampus} from './campus-router.mjs?v=db08e1b5a45c';
-import './day-ui.mjs?v=db08e1b5a45c';
+import {MAP,MODES,PLACES} from './city-data.mjs?v=eb9c0d202332';
+import {estimateAll,rangeLabel,distanceLabel,routeNames} from './router.mjs?v=eb9c0d202332';
+import {CAMPUS_MAP,CAMPUS_MODES,CAMPUS_PLACES} from './campus-data.mjs?v=eb9c0d202332';
+import {estimateCampus} from './campus-router.mjs?v=eb9c0d202332';
+import './day-ui.mjs?v=eb9c0d202332';
 const $=id=>document.getElementById(id),origin=$('origin'),destination=$('destination'),viewport=$('viewport'),stage=$('stage'),overlay=$('route'),assetQuery=new URL(import.meta.url).search;
 const maps={city:{config:MAP,places:PLACES,modes:MODES,image:'cidade.webp',estimate:estimateAll},campus:{config:CAMPUS_MAP,places:CAMPUS_PLACES,modes:CAMPUS_MODES,image:'campus.webp',estimate:(a,b)=>({walk:estimateCampus(a,b)})}};
-const selections={city:{from:'bianca',to:'portao',mode:'walk'},campus:{from:'eastGate',to:'fisio',mode:'walk'}};
-const state={map:'city',...selections.city,scale:1,x:0,y:0,showCity:false,trips:null,pointers:new Map(),initialized:false};
+const selections={city:{from:'',to:'',mode:'walk'},campus:{from:'',to:'',mode:'walk'}};
+const state={map:'city',...selections.city,scale:1,x:0,y:0,showCity:true,trips:null,pointers:new Map(),initialized:false};
 const active=()=>maps[state.map],NS='http://www.w3.org/2000/svg';
-function valid(map,s){return s&&maps[map].places.some(p=>p.id===s.from)&&maps[map].places.some(p=>p.id===s.to)&&maps[map].modes.some(m=>m.id===s.mode);}
-function migrate(map,s){return map==='city'&&s?{...s,from:['fisio','contab'].includes(s.from)?'portao':s.from,to:['fisio','contab'].includes(s.to)?'portao':s.to}:s;}
-try{const old=migrate('city',JSON.parse(localStorage.getItem('amor-amizade-trip')||'null'));if(valid('city',old))selections.city=old;const saved=JSON.parse(localStorage.getItem('amor-amizade-maps-v1')||'null');if(saved){for(const id of Object.keys(maps)){const s=migrate(id,saved[id]);if(valid(id,s))selections[id]=s;}if(maps[saved.active])state.map=saved.active;}}catch{}
-function persist(){selections[state.map]={from:state.from,to:state.to,mode:state.mode};try{localStorage.setItem('amor-amizade-maps-v1',JSON.stringify({...selections,active:state.map}));localStorage.setItem('amor-amizade-trip',JSON.stringify(selections.city));}catch{}}
+// Keep journeys while switching maps, but start each page visit with an overview.
+function persist(){selections[state.map]={from:state.from,to:state.to,mode:state.mode};}
 const name=id=>active().places.find(p=>p.id===id).name;
 function targets(){
  const items=state.map==='campus'?CAMPUS_PLACES:[{id:'campus',name:'Abrir mapa da faculdade',label:[491,154]}];
- $('map-targets').replaceChildren(...items.map(p=>{const b=document.createElement('button');b.type='button';b.className='map-target';b.setAttribute('aria-label',state.map==='city'?p.name:`Destino: ${p.name}`);b.title=state.map==='city'?p.name:`Continuar até ${p.name}`;b.style.left=p.label[0]+'px';b.style.top=p.label[1]+'px';b.style.width=Math.min(180,Math.max(100,p.name.length*5))+'px';b.style.height=(p.name.length>23?40:30)+'px';b.addEventListener('click',e=>{e.stopPropagation();if(state.map==='city')setMap('campus');else{origin.value=destination.value;destination.value=p.id;update();}});return b;}));
+ $('map-targets').replaceChildren(...items.map(p=>{const b=document.createElement('button');b.type='button';b.className='map-target';b.setAttribute('aria-label',state.map==='city'?p.name:`Destino: ${p.name}`);b.title=state.map==='city'?p.name:`Continuar até ${p.name}`;b.style.left=p.label[0]+'px';b.style.top=p.label[1]+'px';b.style.width=Math.min(180,Math.max(100,p.name.length*5))+'px';b.style.height=(p.name.length>23?40:30)+'px';b.addEventListener('click',e=>{e.stopPropagation();if(state.map==='city')setMap('campus');else{if(!origin.value&&!destination.value)origin.value=p.id;else{if(destination.value)origin.value=destination.value;destination.value=p.id;}update();}});return b;}));
 }
 function setMap(id){
  if(!maps[id])return;if(state.initialized)persist();state.map=id;Object.assign(state,selections[id]);if(id==='campus')state.mode='walk';
- for(const select of [origin,destination])select.replaceChildren(...active().places.map(p=>{const o=document.createElement('option');o.value=p.id;o.textContent=p.name;return o;}));origin.value=state.from;destination.value=state.to;
+ for(const select of [origin,destination]){const placeholder=document.createElement('option');placeholder.value='';placeholder.textContent=select===origin?'Escolha a origem':'Escolha o destino';select.replaceChildren(placeholder,...active().places.map(p=>{const o=document.createElement('option');o.value=p.id;o.textContent=p.name;return o;}));}origin.value=state.from;destination.value=state.to;
  const campus=id==='campus';$('map-image').src='./assets/'+active().image+assetQuery;$('map-image').alt=campus?'Mapa ampliado da faculdade, com os setores, acessos, praças e caminhos.':'Mapa da cidade universitária, com bairros, rio e pontes.';
  $('map-city').setAttribute('aria-pressed',String(!campus));$('map-campus').setAttribute('aria-pressed',String(campus));
  for(const key of ['travel-modes','compare-details','city-rules','explore-campus'])$(key).hidden=campus;
  for(const key of ['campus-walk','campus-rules'])$(key).hidden=!campus;
- $('planner-intro').textContent=campus?'Cada toque continua a partir do último destino. Você também pode ajustar a origem.':'Escolha os lugares e o jeito de ir.';$('map-caption').textContent=campus?'Faculdade · apenas a pé':'Cidade universitária';$('map-hint').textContent=campus?'Toque em outro setor para continuar o trajeto':'Arraste para explorar · + / − para ampliar';
- targets();state.showCity=campus;update(false);fit();state.initialized=true;
+ $('planner-intro').textContent=campus?'Toque na origem e depois no destino. Os próximos toques continuam a caminhada.':'Escolha os lugares e o jeito de ir.';$('map-caption').textContent=campus?'Faculdade · apenas a pé':'Cidade universitária';
+ targets();state.showCity=true;update(false);fit();state.initialized=true;
 }
 function update(refit=true){
  state.from=origin.value;state.to=destination.value;if(state.map==='campus')state.mode='walk';
+ const complete=Boolean(state.from&&state.to);
+ for(const [id,place]of [['pin-a',active().places.find(p=>p.id===state.from)],['pin-b',active().places.find(p=>p.id===state.to)]]){$(id).hidden=!place;if(place){$(id).style.left=place.point[0]+'px';$(id).style.top=place.point[1]+'px';}}
+ $('swap').disabled=!complete;$('compare-details').hidden=state.map==='campus'||!complete;$('route-details').hidden=!complete;$('route-legend').hidden=!complete;
+ document.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mode===state.mode)));
+ $('map-hint').textContent=state.map==='campus'?(complete?'Toque em outro setor para continuar o trajeto':state.from?'Toque em um setor para escolher o destino':'Toque em um setor para escolher a origem'):'Arraste para explorar · + / − para ampliar';
+ if(!complete){state.trips=null;state.showCity=true;overlay.replaceChildren();$('result-mode').textContent='Planeje um trajeto';$('result-time').textContent=state.from?'Escolha o destino':state.to?'Escolha a origem':'Escolha os lugares';$('result-distance').textContent='';$('result-context').textContent='Selecione a origem e o destino para ver o caminho e o tempo de viagem.';$('trip-heading').textContent=state.map==='campus'?'Mapa completo da faculdade':'Mapa completo da cidade';$('comparison').replaceChildren();$('streets').replaceChildren();$('breakdown').textContent='';$('walk-legend').hidden=true;fit();persist();return;}
  try{state.trips=active().estimate(state.from,state.to);}catch(error){$('result-time').textContent='Trajeto indisponível';$('result-context').textContent='Escolha outros locais para continuar.';console.error(error);return;}
  const trip=state.trips[state.mode],mode=active().modes.find(m=>m.id===state.mode),same=state.from===state.to;
  $('result-mode').textContent=mode.name;$('result-time').textContent=rangeLabel(trip);$('result-distance').textContent=same?'Mesmo lugar':`${distanceLabel(trip)} no trajeto`;$('trip-heading').textContent=`${name(state.from)} → ${name(state.to)}`;
@@ -44,8 +48,8 @@ function update(refit=true){
 }
 function drawRoute(){overlay.replaceChildren();if(!state.trips)return;for(const leg of state.trips[state.mode].legs){if(leg.path.points.length<2)continue;const points=leg.path.points.map(p=>p.join(',')).join(' '),dashed=leg.kind==='walk'&&['car','moto','bus'].includes(state.mode);for(const halo of [true,false]){const line=document.createElementNS(NS,'polyline');for(const [k,v]of Object.entries({points,fill:'none',stroke:halo?'#ffffff':dashed?'#675279':'#7450ad','stroke-width':String((halo?10:5)/state.scale),'stroke-linecap':'round','stroke-linejoin':'round'}))line.setAttribute(k,v);if(dashed)line.setAttribute('stroke-dasharray',`${6/state.scale} ${8/state.scale}`);overlay.append(line);}}}
 const minScale=()=>Math.min(viewport.clientWidth/active().config.width,viewport.clientHeight/active().config.height)*.7;
-function transform(){stage.style.transform=`translate(${state.x}px,${state.y}px) scale(${state.scale})`;stage.style.setProperty('--inverse-scale',String(1/state.scale));drawRoute();const max=80/state.scale*active().config.kmPerPixel;let distance=.02;for(const d of [.02,.05,.1,.2,.5,1,2])if(d<=max)distance=d;$('scale-label').textContent=distance<1?`${Math.round(distance*1000)} m`:`${distance} km`;$('scale-bar').style.width=`${distance/active().config.kmPerPixel*state.scale}px`;$('fit').textContent=state.showCity?'Enquadrar trajeto':state.map==='campus'?'Ver faculdade inteira':'Ver cidade inteira';}
-function fit(){const w=viewport.clientWidth,h=viewport.clientHeight;if(!w||!h||!state.trips)return;let x0=0,y0=0,x1=active().config.width,y1=active().config.height;if(!state.showCity){const p=state.trips[state.mode].path.points;x0=Math.min(...p.map(p=>p[0]));x1=Math.max(...p.map(p=>p[0]));y0=Math.min(...p.map(p=>p[1]));y1=Math.max(...p.map(p=>p[1]));const cx=(x0+x1)/2,cy=(y0+y1)/2,sx=Math.max(state.map==='campus'?280:390,x1-x0),sy=Math.max(240,y1-y0);x0=cx-sx/2;x1=cx+sx/2;y0=cy-sy/2;y1=cy+sy/2;}const pad=state.showCity?16:55;state.scale=Math.max(minScale(),Math.min((w-pad*2)/(x1-x0),(h-pad*2)/(y1-y0),minScale()/.7*5));state.x=w/2-(x0+x1)/2*state.scale;state.y=h/2-(y0+y1)/2*state.scale;transform();}
+function transform(){stage.style.transform=`translate(${state.x}px,${state.y}px) scale(${state.scale})`;stage.style.setProperty('--inverse-scale',String(1/state.scale));drawRoute();const max=80/state.scale*active().config.kmPerPixel;let distance=.02;for(const d of [.02,.05,.1,.2,.5,1,2])if(d<=max)distance=d;$('scale-label').textContent=distance<1?`${Math.round(distance*1000)} m`:`${distance} km`;$('scale-bar').style.width=`${distance/active().config.kmPerPixel*state.scale}px`;$('fit').textContent=state.trips&&state.showCity?'Enquadrar trajeto':state.map==='campus'?'Ver faculdade inteira':'Ver cidade inteira';}
+function fit(){const w=viewport.clientWidth,h=viewport.clientHeight;if(!w||!h)return;if(!state.trips)state.showCity=true;let x0=0,y0=0,x1=active().config.width,y1=active().config.height;if(!state.showCity){const p=state.trips[state.mode].path.points;x0=Math.min(...p.map(p=>p[0]));x1=Math.max(...p.map(p=>p[0]));y0=Math.min(...p.map(p=>p[1]));y1=Math.max(...p.map(p=>p[1]));const cx=(x0+x1)/2,cy=(y0+y1)/2,sx=Math.max(state.map==='campus'?280:390,x1-x0),sy=Math.max(240,y1-y0);x0=cx-sx/2;x1=cx+sx/2;y0=cy-sy/2;y1=cy+sy/2;}const pad=state.showCity?16:55;state.scale=Math.max(minScale(),Math.min((w-pad*2)/(x1-x0),(h-pad*2)/(y1-y0),minScale()/.7*5));state.x=w/2-(x0+x1)/2*state.scale;state.y=h/2-(y0+y1)/2*state.scale;transform();}
 function zoom(factor,x=viewport.clientWidth/2,y=viewport.clientHeight/2){const next=Math.max(minScale(),Math.min(minScale()/.7*6,state.scale*factor)),ratio=next/state.scale;state.x=x-(x-state.x)*ratio;state.y=y-(y-state.y)*ratio;state.scale=next;transform();}
 origin.addEventListener('change',()=>update());destination.addEventListener('change',()=>update());$('swap').addEventListener('click',()=>{[origin.value,destination.value]=[destination.value,origin.value];update();});document.querySelectorAll('[data-mode]').forEach(b=>b.addEventListener('click',()=>{if(state.map!=='city')return;state.mode=b.dataset.mode;update();}));
 $('map-city').addEventListener('click',()=>setMap('city'));$('map-campus').addEventListener('click',()=>setMap('campus'));$('explore-campus').addEventListener('click',()=>setMap('campus'));

@@ -1,4 +1,4 @@
-import {campusDistance,CAMPUS_WAYS,CAMPUS_PLACES} from './campus-data.mjs?v=db08e1b5a45c';
+import {campusDistance,CAMPUS_WAYS,CAMPUS_PLACES} from './campus-data.mjs?v=eb9c0d202332';
 const key=p=>p.join(','),vertices=new Map(),adjacency=new Map(),edges=[];
 for(const way of CAMPUS_WAYS)for(let i=1;i<way.points.length;i++){
  const a=way.points[i-1],b=way.points[i],u=key(a),v=key(b);if(u===v)continue;
