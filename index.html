@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#6d55a5">
+<meta name="description" content="Escolha os lugares e como viajar pela cidade de amor e amizade. Rotas a pé, de bicicleta, carro, moto e ônibus.">
+<title>amor&amizade · Por onde vamos?</title>
+<link rel="stylesheet" href="./assets/app.css"><script type="module" src="./assets/app.mjs"></script>
+</head>
+<body>
+<header><a class="brand" href="./">amor<span>&</span>amizade ♡</a><span>Nosso guia da cidade</span></header>
+<main class="layout">
+<section class="planner" aria-labelledby="title">
+ <h1 id="title">Por onde vamos?</h1><p class="intro">Escolha os lugares e o jeito de ir.</p>
+ <div class="places">
+  <label><span>● De onde?</span><select id="origin" aria-label="Origem"></select></label>
+  <button id="swap" type="button" aria-label="Inverter origem e destino" title="Inverter trajeto">⇅</button>
+  <label><span>● Para onde?</span><select id="destination" aria-label="Destino"></select></label>
+ </div>
+ <div class="modes" role="group" aria-label="Como você quer ir?">
+  <button type="button" data-mode="walk" aria-pressed="true"><span aria-hidden="true">🚶</span>A pé</button>
+  <button type="button" data-mode="bike" aria-pressed="false" aria-label="Bicicleta"><span aria-hidden="true">🚲</span>Bike</button>
+  <button type="button" data-mode="car" aria-pressed="false"><span aria-hidden="true">🚗</span>Carro</button>
+  <button type="button" data-mode="moto" aria-pressed="false"><span aria-hidden="true">🏍️</span>Moto</button>
+  <button type="button" data-mode="bus" aria-pressed="false"><span aria-hidden="true">🚌</span>Ônibus</button>
+ </div>
+ <div class="result" aria-live="polite" aria-atomic="true"><span id="result-mode">A pé</span><strong id="result-time">Calculando…</strong><span id="result-distance"></span><p id="result-context"></p></div>
+ <details><summary>Comparar os meios de transporte</summary><div id="comparison"></div></details>
+ <details class="rules"><summary>Detalhes e critérios do trajeto</summary><p id="breakdown"></p><ol id="streets"></ol>
+  <p>São estimativas para o RPG, de porta a porta. Cada bairro usa um acesso de referência. As rotas seguem a rede de vias traçada sobre este mapa ilustrado.</p>
+  <p><b>Por que a bicicleta às vezes empata com o carro?</b> O carro usa média urbana de 22 km/h, considerando cruzamentos e circulação, e soma 4 minutos para saída e estacionamento. A bicicleta usa 14 km/h e soma 2 minutos para guardar. Em percursos curtos, isso pode equilibrar os tempos.</p>
+  <p>A moto usa a mesma média urbana do carro e soma 2 minutos para preparação e estacionamento. Carro, moto e ônibus usam apenas vias de veículos; o acesso final ao prédio é feito a pé.</p>
+  <p>A pé: 4,5 km/h. Ônibus: 18 km/h, paradas e 5–12 minutos de espera por embarque. Uma troca de linha acrescenta outra espera. As linhas U1, U2 e U3 são propostas para o cenário.</p>
+  <p>Escala proposta: 2 m por pixel do mapa original. Sem previsão de trânsito em tempo real.</p>
+ </details>
+</section>
+<section class="map-area" aria-label="Mapa e percurso">
+ <div class="map-heading"><span id="trip-heading">Casa da Bianca → Fisioterapia</span><span>Cidade universitária</span></div>
+ <div class="map-shell" id="map-shell">
+  <div class="viewport" id="viewport" tabindex="0" role="img" aria-label="Mapa do trajeto. Arraste para mover; use os botões ou as teclas mais e menos para ampliar. As setas do teclado movem o mapa.">
+   <div class="stage" id="stage">
+    <img src="./assets/cidade.webp" width="1536" height="1024" draggable="false" alt="Mapa visto de cima da cidade universitária, com bairros, rio, pontes e zona rural ao nordeste.">
+    <svg id="route" viewBox="0 0 1536 1024" aria-hidden="true"></svg>
+    <div class="pin" id="pin-a" aria-hidden="true"><span>A</span></div><div class="pin finish" id="pin-b" aria-hidden="true"><span>B</span></div>
+   </div>
+  </div>
+  <button class="map-button fit" id="fit" type="button">Ver cidade inteira</button>
+  <button class="map-button expand" id="expand" type="button" aria-label="Mapa em tela cheia" title="Tela cheia">⛶</button>
+  <div class="zoom" role="group" aria-label="Zoom do mapa"><button type="button" id="zoom-in" aria-label="Aproximar mapa">+</button><button type="button" id="zoom-out" aria-label="Afastar mapa">−</button></div>
+  <div class="scale"><span id="scale-label">200 m</span><span id="scale-bar"></span></div>
+ </div>
+ <div class="map-footer"><span>━ Seu percurso <span id="walk-legend" hidden>· tracejado: trecho a pé</span></span><span>Arraste para explorar · + / − para ampliar</span></div>
+ <p class="note">Um cenário para as nossas histórias. Distâncias e tempos propostos para o RPG.</p>
+</section>
+</main>
+<noscript>Ative o JavaScript para escolher os trajetos e calcular os tempos.</noscript>
+</body>
+</html>
