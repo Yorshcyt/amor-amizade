@@ -2,56 +2,76 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#6d55a5">
-<meta name="description" content="Escolha os lugares e como viajar pela cidade de amor e amizade. Rotas a pé, de bicicleta, carro, moto e ônibus.">
-<title>amor&amizade · Por onde vamos?</title>
-<link rel="stylesheet" href="./assets/app.css"><script type="module" src="./assets/app.mjs"></script>
+<meta name="description" content="Explore a cidade e a faculdade de amor&amizade, calcule trajetos e prepare a abertura de um novo dia do RPG.">
+<title>amor&amizade · Nosso mundo</title>
+<link rel="stylesheet" href="./assets/app.css"><link rel="stylesheet" href="./assets/chapters.css"><link rel="stylesheet" href="./assets/mobile.css"><script type="module" src="./assets/app.mjs"></script>
 </head>
 <body>
-<header><a class="brand" href="./">amor<span>&</span>amizade ♡</a><span>Nosso guia da cidade</span></header>
-<main class="layout">
+<header><a class="brand" href="./">amor<span>&</span>amizade ♡</a><nav class="main-nav" aria-label="O que vamos fazer?"><button type="button" id="nav-map" aria-pressed="true"><span aria-hidden="true">🗺</span> Explorar</button><button type="button" id="nav-day" aria-pressed="false"><span aria-hidden="true">🎲</span> Começar o dia</button></nav></header>
+<main>
+<div class="layout" id="map-view">
 <section class="planner" aria-labelledby="title">
- <h1 id="title">Por onde vamos?</h1><p class="intro">Escolha os lugares e o jeito de ir.</p>
+ <div class="map-switch" role="group" aria-label="Escolha o mapa"><button type="button" id="map-city" aria-pressed="true">Cidade</button><button type="button" id="map-campus" aria-pressed="false">Faculdade</button></div>
+ <h1 id="title">Por onde vamos?</h1><p class="intro" id="planner-intro">Escolha os lugares e o jeito de ir.</p>
  <div class="places">
   <label><span>● De onde?</span><select id="origin" aria-label="Origem"></select></label>
   <button id="swap" type="button" aria-label="Inverter origem e destino" title="Inverter trajeto">⇅</button>
   <label><span>● Para onde?</span><select id="destination" aria-label="Destino"></select></label>
  </div>
- <div class="modes" role="group" aria-label="Como você quer ir?">
+ <div class="modes" id="travel-modes" role="group" aria-label="Como você quer ir?">
   <button type="button" data-mode="walk" aria-pressed="true"><span aria-hidden="true">🚶</span>A pé</button>
   <button type="button" data-mode="bike" aria-pressed="false" aria-label="Bicicleta"><span aria-hidden="true">🚲</span>Bike</button>
   <button type="button" data-mode="car" aria-pressed="false"><span aria-hidden="true">🚗</span>Carro</button>
   <button type="button" data-mode="moto" aria-pressed="false"><span aria-hidden="true">🏍️</span>Moto</button>
   <button type="button" data-mode="bus" aria-pressed="false"><span aria-hidden="true">🚌</span>Ônibus</button>
  </div>
+ <div id="campus-walk" class="walk-badge" hidden>🚶 Pela faculdade, vamos a pé.</div>
  <div class="result" aria-live="polite" aria-atomic="true"><span id="result-mode">A pé</span><strong id="result-time">Calculando…</strong><span id="result-distance"></span><p id="result-context"></p></div>
- <details><summary>Comparar os meios de transporte</summary><div id="comparison"></div></details>
+ <details id="compare-details"><summary>Comparar os meios de transporte</summary><div id="comparison"></div></details>
  <details class="rules"><summary>Detalhes e critérios do trajeto</summary><p id="breakdown"></p><ol id="streets"></ol>
-  <p>São estimativas para o RPG, de porta a porta. Cada bairro usa um acesso de referência. As rotas seguem a rede de vias traçada sobre este mapa ilustrado.</p>
-  <p><b>Por que a bicicleta às vezes empata com o carro?</b> O carro usa média urbana de 22 km/h, considerando cruzamentos e circulação, e soma 4 minutos para saída e estacionamento. A bicicleta usa 14 km/h e soma 2 minutos para guardar. Em percursos curtos, isso pode equilibrar os tempos.</p>
-  <p>A moto usa a mesma média urbana do carro e soma 2 minutos para preparação e estacionamento. Carro, moto e ônibus usam apenas vias de veículos; o acesso final ao prédio é feito a pé.</p>
-  <p>A pé: 4,5 km/h. Ônibus: 18 km/h, paradas e 5–12 minutos de espera por embarque. Uma troca de linha acrescenta outra espera. As linhas U1, U2 e U3 são propostas para o cenário.</p>
-  <p>Escala proposta: 2 m por pixel do mapa original. Sem previsão de trânsito em tempo real.</p>
+  <p>São estimativas para o RPG, até os acessos dos locais. As rotas seguem uma rede de vias traçada sobre os mapas ilustrados.</p>
+  <div id="city-rules"><p><b>Por que a bicicleta às vezes empata com o carro?</b> O carro usa média urbana de 22 km/h e soma 4 minutos para saída e estacionamento. A bicicleta usa 14 km/h e soma 2 minutos para guardar. Em percursos curtos, isso pode equilibrar os tempos.</p><p>A moto usa a mesma média urbana do carro e soma 2 minutos para preparação e estacionamento. Carro, moto e ônibus usam apenas vias de veículos; o acesso final ao prédio é feito a pé.</p><p>A pé: 4,5 km/h. Ônibus: 18 km/h, paradas e 5–12 minutos de espera por embarque. Uma troca de linha acrescenta outra espera. As linhas U1, U2 e U3 são propostas para o cenário.</p><p>Escala proposta da cidade: 2 m por pixel do mapa original. Sem previsão de trânsito em tempo real.</p></div>
+  <p id="campus-rules" hidden>No campus, os trajetos são apenas a pé, a 4,5 km/h, por passeios e travessias desenhados. Os pontos indicam acessos externos. A escala de 0,9 m por pixel é aproximada; não inclui corredores ou andares internos. Os setores sem nome no mapa original foram detalhados para o RPG.</p>
  </details>
+ <button id="explore-campus" class="secondary full-width" type="button">Explorar a faculdade <span aria-hidden="true">↗</span></button>
 </section>
 <section class="map-area" aria-label="Mapa e percurso">
- <div class="map-heading"><span id="trip-heading">Casa da Bianca → Fisioterapia</span><span>Cidade universitária</span></div>
+ <div class="map-heading"><span id="trip-heading">Casa da Bianca → Fisioterapia</span><span id="map-caption">Cidade universitária</span></div>
  <div class="map-shell" id="map-shell">
-  <div class="viewport" id="viewport" tabindex="0" role="img" aria-label="Mapa do trajeto. Arraste para mover; use os botões ou as teclas mais e menos para ampliar. As setas do teclado movem o mapa.">
+  <div class="viewport" id="viewport" tabindex="0" role="group" aria-label="Mapa do trajeto. Arraste para mover; use os botões ou as teclas mais e menos para ampliar. As setas movem o mapa.">
    <div class="stage" id="stage">
-    <img src="./assets/cidade.webp" width="1536" height="1024" draggable="false" alt="Mapa visto de cima da cidade universitária, com bairros, rio, pontes e zona rural ao nordeste.">
-    <svg id="route" viewBox="0 0 1536 1024" aria-hidden="true"></svg>
+    <img id="map-image" src="./assets/cidade.webp" width="1536" height="1024" draggable="false" alt="Mapa da cidade universitária visto de cima, com bairros, rio e pontes.">
+    <svg id="route" viewBox="0 0 1536 1024" aria-hidden="true"></svg><div id="map-targets"></div>
     <div class="pin" id="pin-a" aria-hidden="true"><span>A</span></div><div class="pin finish" id="pin-b" aria-hidden="true"><span>B</span></div>
    </div>
   </div>
-  <button class="map-button fit" id="fit" type="button">Ver cidade inteira</button>
-  <button class="map-button expand" id="expand" type="button" aria-label="Mapa em tela cheia" title="Tela cheia">⛶</button>
+  <button class="map-button fit" id="fit" type="button">Ver cidade inteira</button><button class="map-button expand" id="expand" type="button" aria-label="Mapa em tela cheia" title="Tela cheia">⛶</button>
   <div class="zoom" role="group" aria-label="Zoom do mapa"><button type="button" id="zoom-in" aria-label="Aproximar mapa">+</button><button type="button" id="zoom-out" aria-label="Afastar mapa">−</button></div>
   <div class="scale"><span id="scale-label">200 m</span><span id="scale-bar"></span></div>
  </div>
- <div class="map-footer"><span>━ Seu percurso <span id="walk-legend" hidden>· tracejado: trecho a pé</span></span><span>Arraste para explorar · + / − para ampliar</span></div>
+ <div class="map-footer"><span>━ Seu percurso <span id="walk-legend" hidden>· tracejado: trecho a pé</span></span><span id="map-hint">Arraste para explorar · + / − para ampliar</span></div>
  <p class="note">Um cenário para as nossas histórias. Distâncias e tempos propostos para o RPG.</p>
 </section>
+</div>
+<section id="day-view" class="day-view" aria-labelledby="day-title" hidden>
+ <div class="day-heading"><span class="eyebrow">UM NOVO CAPÍTULO</span><h1 id="day-title">Deixe os dados decidirem.</h1><p>Informe a data e o horário. O sorteio cuida do clima, da temperatura e de como o dia começa.</p></div>
+ <div class="day-layout">
+  <form id="day-form" class="day-form card">
+   <div class="field-pair"><label>Data da história<input id="story-date" type="date" min="1900-01-01" max="2199-12-31" value="2027-02-16" required></label><label>Horário<input id="story-time" type="time" value="07:47" required></label></div>
+   <p class="weekday" id="story-weekday"></p>
+   <button class="primary" type="submit"><span aria-hidden="true">🎲</span> Rolar o dia</button><button class="secondary" id="next-day" type="button">Próximo dia <span aria-hidden="true">→</span></button>
+   <p class="small-note">Cada toque faz um novo sorteio. Pode sair céu limpo, nuvens, garoa, chuva ou neblina, conforme a época da cidade fictícia.</p>
+  </form>
+  <div class="day-preview card">
+   <div class="opening-top"><div><span class="eyebrow" id="opening-roll">PRONTO PARA A HISTÓRIA</span><h2 id="opening-title">O cenário de hoje</h2></div><span id="opening-weather" class="weather-pill"></span></div>
+   <label for="opening-text" class="sr-only">Texto da abertura do dia</label><textarea id="opening-text" rows="9" spellcheck="true" aria-describedby="opening-tip"></textarea>
+   <div class="opening-actions"><p id="opening-tip">Você pode editar o texto antes de copiar.</p><button class="primary" id="copy-opening" type="button">Copiar abertura</button></div>
+   <p id="day-status" class="status" role="status" aria-live="polite"></p>
+   <details class="day-history"><summary>Aberturas salvas neste aparelho</summary><div id="opening-history"></div><p class="small-note">Até 8 aberturas ficam neste navegador. Para sua amiga usar a mesma, compartilhe o texto copiado.</p></details>
+  </div>
+ </div>
+</section>
 </main>
-<noscript>Ative o JavaScript para escolher os trajetos e calcular os tempos.</noscript>
+<noscript>Ative o JavaScript para explorar os mapas e preparar a abertura do dia.</noscript>
 </body>
 </html>
