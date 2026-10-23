@@ -19,7 +19,7 @@ const N = {
  bnE:[1094,157],bmE:[1128,280],bsE:[1155,455],midW:[947,561],midE:[1015,586],lowW:[924,769],lowE:[989,731],lastW:[1033,915],lastE:[1080,900],
  cn:[578,61],cw:[236,171],cl:[255,286],csw:[322,434],cs:[527,455],
  gate:[710,307],campSE:[650,299],campS:[580,290],campSW:[419,291],parkWest:[354,306],parkEast:[710,270],
- plaza:[566,227],fisioWalk:[373,167],libraryWalk:[450,278],contabWalk:[651,227],
+ plaza:[566,227],libraryWalk:[450,278],
  coast1:[300,493],coast2:[312,575],coast3:[319,641],coast4:[319,710],coast5:[347,813],
  a1:[451,544],a2:[578,520],a3:[686,506],a4:[786,488],a5:[891,470],a6:[947,470],
  squareNW:[480,609],squareNE:[578,584],squareSW:[483,702],squareSE:[590,683],
@@ -33,7 +33,7 @@ const N = {
  shopW:[1188,468],shopParking:[1280,506],shopE:[1418,510],
  eastRow0:[1200,532],eastRow1:[1178,587],eastRow2:[1160,657],eastRow3:[1140,718],eastRow4:[1122,783],eastRow5:[1105,844],eastRow6:[1087,902],
  eastWest0:[1008,638],eastWest1:[996,688],esperancaStreet:[1238,669],eastMain1:[1398,599],eastMain2:[1380,660],eastMain3:[1354,779],eastMain4:[1315,910],
- bianca:[771,268],leo:[1024,336],portao:[710,307],fisio:[362,167],contab:[651,218],biblioteca:[445,278],hospital:[527,441],
+ bianca:[771,268],leo:[1024,336],portao:[710,307],biblioteca:[445,278],hospital:[527,441],
  centro:[535,647],mercado:[565,839],orla:[284,563],parque:[940,171],shopping:[1288,491],
  colinas:[1250,246],esperanca:[1230,660],rodoviaria:[758,925],rural:[1439,120]
 };
@@ -121,19 +121,13 @@ way('Passeio da Orla',['coast2',[310,566],'orla'],{kind:'shared'});
 way('Passeio da praça',['squareNE',[567,599],[551,625],'centro'],{kind:'shared'});
 way('Entrada sul do Parque',['q04',[1017,171],'parkWalk',[964,176],'parque'],{kind:'shared'});
 way('Passeio central do campus',['campS',[566,271],[568,250],'plaza'],{kind:'shared'});
-way('Passeio da Fisioterapia',['parkWest',[366,278],[374,243],[373,210],'fisioWalk','fisio'],{kind:'shared'});
 way('Alameda da biblioteca',['parkWest',[392,291],'campSW',[438,281],'libraryWalk','biblioteca'],{kind:'shared'});
 way('Biblioteca à praça',['libraryWalk',[492,289],[536,290],'campS'],{kind:'shared'});
-way('Fisioterapia à praça',['fisioWalk',[373,210],[375,232],[414,229],[454,226],[490,231],[539,230],'plaza'],{kind:'shared'});
-way('Contábeis à praça',['plaza',[588,245],[617,236],[627,225],'contabWalk','contab'],{kind:'shared'});
-way('Acesso Contábeis',['parkEast',[701,248],[675,236],'contabWalk'],{kind:'shared'});
 export const WAYS = ways;
 export const PLACES = [
  {id:'bianca',name:'Casa da Bianca',node:'bianca',parking:'biaStreet',stop:'biaStreet'},
  {id:'leo',name:'Casa do Leonardo',node:'leo',parking:'leoStreet',stop:'leoStreet'},
  {id:'portao',name:'Universidade · portão leste',node:'portao',parking:'gate',stop:'q30'},
- {id:'fisio',name:'Fisioterapia',node:'fisio',parking:'parkWest',stop:'gate'},
- {id:'contab',name:'Ciências Contábeis',node:'contab',parking:'parkEast',stop:'gate'},
  {id:'biblioteca',name:'Biblioteca central',node:'biblioteca',parking:'parkWest',stop:'gate'},
  {id:'hospital',name:'Hospital Universitário',node:'hospital',parking:'cs',stop:'cs'},
  {id:'centro',name:'Centro · praça central',node:'centro',parking:'squareNE',stop:'squareNE'},

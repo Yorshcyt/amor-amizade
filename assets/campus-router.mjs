@@ -1,8 +1,8 @@
-import {CAMPUS_MAP,CAMPUS_WAYS,CAMPUS_PLACES} from './campus-data.mjs';
+import {campusDistance,CAMPUS_WAYS,CAMPUS_PLACES} from './campus-data.mjs?v=db08e1b5a45c';
 const key=p=>p.join(','),vertices=new Map(),adjacency=new Map(),edges=[];
 for(const way of CAMPUS_WAYS)for(let i=1;i<way.points.length;i++){
  const a=way.points[i-1],b=way.points[i],u=key(a),v=key(b);if(u===v)continue;
- const edge={a,b,u,v,name:way.name,kind:'shared',bridge:null,distance:Math.hypot(a[0]-b[0],a[1]-b[1])*CAMPUS_MAP.kmPerPixel};edges.push(edge);vertices.set(u,a);vertices.set(v,b);
+ const edge={a,b,u,v,name:way.name,kind:'shared',bridge:null,distance:campusDistance(a,b)};edges.push(edge);vertices.set(u,a);vertices.set(v,b);
  for(const [from,to]of [[u,v],[v,u]]){if(!adjacency.has(from))adjacency.set(from,[]);adjacency.get(from).push({to,edge});}
 }
 const places=new Map(CAMPUS_PLACES.map(p=>[p.id,p])),cache=new Map();

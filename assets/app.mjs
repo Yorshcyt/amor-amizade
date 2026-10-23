@@ -1,29 +1,30 @@
-import {MAP,MODES,PLACES} from './city-data.mjs';
-import {estimateAll,rangeLabel,distanceLabel,routeNames} from './router.mjs';
-import {CAMPUS_MAP,CAMPUS_MODES,CAMPUS_PLACES} from './campus-data.mjs';
-import {estimateCampus} from './campus-router.mjs';
-import './day-ui.mjs';
-const $=id=>document.getElementById(id),origin=$('origin'),destination=$('destination'),viewport=$('viewport'),stage=$('stage'),overlay=$('route');
+import {MAP,MODES,PLACES} from './city-data.mjs?v=db08e1b5a45c';
+import {estimateAll,rangeLabel,distanceLabel,routeNames} from './router.mjs?v=db08e1b5a45c';
+import {CAMPUS_MAP,CAMPUS_MODES,CAMPUS_PLACES} from './campus-data.mjs?v=db08e1b5a45c';
+import {estimateCampus} from './campus-router.mjs?v=db08e1b5a45c';
+import './day-ui.mjs?v=db08e1b5a45c';
+const $=id=>document.getElementById(id),origin=$('origin'),destination=$('destination'),viewport=$('viewport'),stage=$('stage'),overlay=$('route'),assetQuery=new URL(import.meta.url).search;
 const maps={city:{config:MAP,places:PLACES,modes:MODES,image:'cidade.webp',estimate:estimateAll},campus:{config:CAMPUS_MAP,places:CAMPUS_PLACES,modes:CAMPUS_MODES,image:'campus.webp',estimate:(a,b)=>({walk:estimateCampus(a,b)})}};
-const selections={city:{from:'bianca',to:'fisio',mode:'walk'},campus:{from:'eastGate',to:'fisio',mode:'walk'}};
+const selections={city:{from:'bianca',to:'portao',mode:'walk'},campus:{from:'eastGate',to:'fisio',mode:'walk'}};
 const state={map:'city',...selections.city,scale:1,x:0,y:0,showCity:false,trips:null,pointers:new Map(),initialized:false};
 const active=()=>maps[state.map],NS='http://www.w3.org/2000/svg';
 function valid(map,s){return s&&maps[map].places.some(p=>p.id===s.from)&&maps[map].places.some(p=>p.id===s.to)&&maps[map].modes.some(m=>m.id===s.mode);}
-try{const old=JSON.parse(localStorage.getItem('amor-amizade-trip')||'null');if(valid('city',old))selections.city=old;const saved=JSON.parse(localStorage.getItem('amor-amizade-maps-v1')||'null');if(saved){for(const id of Object.keys(maps))if(valid(id,saved[id]))selections[id]=saved[id];if(maps[saved.active])state.map=saved.active;}}catch{}
+function migrate(map,s){return map==='city'&&s?{...s,from:['fisio','contab'].includes(s.from)?'portao':s.from,to:['fisio','contab'].includes(s.to)?'portao':s.to}:s;}
+try{const old=migrate('city',JSON.parse(localStorage.getItem('amor-amizade-trip')||'null'));if(valid('city',old))selections.city=old;const saved=JSON.parse(localStorage.getItem('amor-amizade-maps-v1')||'null');if(saved){for(const id of Object.keys(maps)){const s=migrate(id,saved[id]);if(valid(id,s))selections[id]=s;}if(maps[saved.active])state.map=saved.active;}}catch{}
 function persist(){selections[state.map]={from:state.from,to:state.to,mode:state.mode};try{localStorage.setItem('amor-amizade-maps-v1',JSON.stringify({...selections,active:state.map}));localStorage.setItem('amor-amizade-trip',JSON.stringify(selections.city));}catch{}}
 const name=id=>active().places.find(p=>p.id===id).name;
 function targets(){
  const items=state.map==='campus'?CAMPUS_PLACES:[{id:'campus',name:'Abrir mapa da faculdade',label:[491,154]}];
- $('map-targets').replaceChildren(...items.map(p=>{const b=document.createElement('button');b.type='button';b.className='map-target';b.setAttribute('aria-label',state.map==='city'?p.name:`Destino: ${p.name}`);b.title=state.map==='city'?p.name:`Ir para ${p.name}`;b.style.left=p.label[0]+'px';b.style.top=p.label[1]+'px';b.style.width=Math.min(180,Math.max(100,p.name.length*5))+'px';b.style.height=(p.name.length>23?40:30)+'px';b.addEventListener('click',e=>{e.stopPropagation();if(state.map==='city')setMap('campus');else{destination.value=p.id;update();}});return b;}));
+ $('map-targets').replaceChildren(...items.map(p=>{const b=document.createElement('button');b.type='button';b.className='map-target';b.setAttribute('aria-label',state.map==='city'?p.name:`Destino: ${p.name}`);b.title=state.map==='city'?p.name:`Continuar até ${p.name}`;b.style.left=p.label[0]+'px';b.style.top=p.label[1]+'px';b.style.width=Math.min(180,Math.max(100,p.name.length*5))+'px';b.style.height=(p.name.length>23?40:30)+'px';b.addEventListener('click',e=>{e.stopPropagation();if(state.map==='city')setMap('campus');else{origin.value=destination.value;destination.value=p.id;update();}});return b;}));
 }
 function setMap(id){
  if(!maps[id])return;if(state.initialized)persist();state.map=id;Object.assign(state,selections[id]);if(id==='campus')state.mode='walk';
  for(const select of [origin,destination])select.replaceChildren(...active().places.map(p=>{const o=document.createElement('option');o.value=p.id;o.textContent=p.name;return o;}));origin.value=state.from;destination.value=state.to;
- const campus=id==='campus';$('map-image').src='./assets/'+active().image;$('map-image').alt=campus?'Mapa ampliado da faculdade, com os setores, acessos, praças e caminhos.':'Mapa da cidade universitária, com bairros, rio e pontes.';
+ const campus=id==='campus';$('map-image').src='./assets/'+active().image+assetQuery;$('map-image').alt=campus?'Mapa ampliado da faculdade, com os setores, acessos, praças e caminhos.':'Mapa da cidade universitária, com bairros, rio e pontes.';
  $('map-city').setAttribute('aria-pressed',String(!campus));$('map-campus').setAttribute('aria-pressed',String(campus));
  for(const key of ['travel-modes','compare-details','city-rules','explore-campus'])$(key).hidden=campus;
  for(const key of ['campus-walk','campus-rules'])$(key).hidden=!campus;
- $('planner-intro').textContent=campus?'Escolha dois setores ou toque em um nome no mapa.':'Escolha os lugares e o jeito de ir.';$('map-caption').textContent=campus?'Faculdade · apenas a pé':'Cidade universitária';$('map-hint').textContent=campus?'Toque em um setor para escolher o destino':'Arraste para explorar · + / − para ampliar';
+ $('planner-intro').textContent=campus?'Cada toque continua a partir do último destino. Você também pode ajustar a origem.':'Escolha os lugares e o jeito de ir.';$('map-caption').textContent=campus?'Faculdade · apenas a pé':'Cidade universitária';$('map-hint').textContent=campus?'Toque em outro setor para continuar o trajeto':'Arraste para explorar · + / − para ampliar';
  targets();state.showCity=campus;update(false);fit();state.initialized=true;
 }
 function update(refit=true){

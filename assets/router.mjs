@@ -1,4 +1,4 @@
-import {MAP,MODES,JUNCTIONS,WAYS,PLACES,BUS_LINES,STOP_NAMES} from './city-data.mjs';
+import {MAP,MODES,JUNCTIONS,WAYS,PLACES,BUS_LINES,STOP_NAMES} from './city-data.mjs?v=db08e1b5a45c';
 
 const coordinateKey = p=>`${p[0]},${p[1]}`;
 const vertices=new Map(),edges=[],adjacency=new Map();
@@ -86,7 +86,7 @@ export function estimateTrip(from,to,mode='walk'){
  return mode==='bus'?busTrip(placeById[from],placeById[to]):basicTrip(placeById[from],placeById[to],mode);
 }
 export function estimateAll(from,to){return Object.fromEntries(MODES.map(m=>[m.id,estimateTrip(from,to,m.id)]));}
-export function rangeLabel(trip){if(!trip.high)return '0 min';const lo=Math.max(1,Math.round(trip.low)),hi=Math.max(lo+1,Math.round(trip.high));return `${lo}–${hi} min`;}
+export function rangeLabel(trip){if(!trip.high)return '0 min';if(trip.high<1)return 'Menos de 1 min';const lo=Math.max(1,Math.round(trip.low)),hi=Math.max(lo,Math.round(trip.high));return lo===hi?`${lo} min`:`${lo}–${hi} min`;}
 export function distanceLabel(trip){const d=trip.path.distance;return d<1?`${Math.round(d*1000/10)*10} m`:`${d.toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1})} km`;}
 export function routeNames(trip){return [...new Set(trip.path.segments.map(e=>e.name))];}
 export const NETWORK={vertices,edges,placeById,aliases};

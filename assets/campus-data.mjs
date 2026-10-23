@@ -1,11 +1,19 @@
 // Walking paths traced on the approved 1536 × 1024 campus illustration.
 // Labels are roof locations; endpoints are the outdoor entrances, not roof centers.
-export const CAMPUS_MAP={width:1536,height:1024,kmPerPixel:.0009};
+import {MAP as CITY_MAP} from './city-data.mjs?v=db08e1b5a45c';
+// Matching touchline corners of the same football field in both illustrations.
+// The redraw slightly changes the aspect ratio, so calibrate each axis separately.
+export const CAMPUS_CALIBRATION={city:[[381,70],[440,107]],campus:[[512,158],[649,235]]};
+const reference=CAMPUS_CALIBRATION;
+export const CAMPUS_MAP={width:1536,height:1024,
+ kmPerPixel:CITY_MAP.kmPerPixel*(reference.city[1][0]-reference.city[0][0])/(reference.campus[1][0]-reference.campus[0][0]),
+ kmPerPixelY:CITY_MAP.kmPerPixel*(reference.city[1][1]-reference.city[0][1])/(reference.campus[1][1]-reference.campus[0][1])};
+export const campusDistance=(a,b)=>Math.hypot((b[0]-a[0])*CAMPUS_MAP.kmPerPixel,(b[1]-a[1])*CAMPUS_MAP.kmPerPixelY);
 export const CAMPUS_MODES=[{id:'walk',name:'A pé',short:'A pé',speed:4.5,overhead:0}];
 export const CAMPUS_NODES={
  field:[578,257],fieldSW:[493,256],fieldSE:[664,256],fieldN:[586,131],north:[672,128],pool:[819,214],poolE:[853,180],poolSE:[846,227],courts:[993,270],courtsW:[902,265],sportE:[1227,273],
  wn:[321,146],wb:[326,240],wf:[329,326],wm:[324,393],wl:[319,475],wj:[336,538],ws:[350,589],
- fisio:[347,335],westMid:[490,420],westSouth:[469,549],westBase:[468,585],labs:[439,525],
+ fisio:[500,350],westMid:[490,420],westSouth:[469,549],westBase:[468,585],labs:[439,525],
  reitoria:[642,360],northMid:[674,386],northPlaza:[699,425],salas:[795,395],eastNorth:[868,316],contab:[926,389],
  pn:[730,450],pne:[767,463],pe:[780,494],pse:[769,526],ps:[734,550],psw:[699,536],pw:[682,504],pnw:[693,472],praca:[706,520],
  ru:[591,470],library:[663,552],secretaria:[827,520],cantina:[797,618],auditorio:[1022,579],
@@ -30,10 +38,12 @@ way('Salas à ala norte',['salas',[833,399],[854,378],[862,349],'eastNorth']);
 way('Praça de convivência',['pn',[752,454],'pne',[776,477],'pe',[778,511],'pse',[754,543],'ps',[714,546],'psw',[687,521],'pw',[684,488],'pnw',[709,456],'pn']);
 way('Acesso à praça',['psw','praca']);
 way('Alameda oeste da praça',['pnw','northPlaza',[685,416],[666,405],'northMid']);
-way('Acesso à Fisioterapia',['wf',[338,330],'fisio']);
+way('Acesso leste à Fisioterapia',['fieldSW',[503,266],[506,291],[502,319],'fisio',[500,383],'westMid']);
+way('Passeio sul da Reitoria',['fisio',[519,352],[537,350],[543,365],[547,379],[566,389],[589,392],[615,394],[640,389],[655,395],'northMid']);
+way('Passeio entre a Reitoria e o restaurante',[[640,389],[648,407],[650,430],[649,452],[638,467]]);
 way('Alameda dos laboratórios',['westMid',[492,461],[484,500],[474,527],'westSouth','westBase']);
 way('Entrada dos laboratórios',['labs',[453,540],'westSouth']);
-way('Passeio do restaurante',[[492,461],[492,493],[513,478],[548,466],'ru',[630,469],[657,472],[676,485],'pw']);
+way('Passeio do restaurante',[[492,461],[492,493],[513,478],[548,466],'ru',[630,469],[638,467],[657,472],[676,485],'pw']);
 way('Acesso à biblioteca',['westSouth',[499,568],[515,589],[544,595],[586,597],[630,580],[650,570],'library',[681,556],'psw']);
 way('Biblioteca à praça',['library',[686,558],[714,560],'ps']);
 way('Passeio da secretaria',['pse',[790,540],[811,524],'secretaria']);

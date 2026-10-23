@@ -4,7 +4,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#6d55a5">
 <meta name="description" content="Explore a cidade e a faculdade de amor&amizade, calcule trajetos e prepare a abertura de um novo dia do RPG.">
 <title>amor&amizade · Nosso mundo</title>
-<link rel="stylesheet" href="./assets/app.css"><link rel="stylesheet" href="./assets/chapters.css"><link rel="stylesheet" href="./assets/mobile.css"><script type="module" src="./assets/app.mjs"></script>
+<link rel="stylesheet" href="./assets/app.css?v=db08e1b5a45c"><link rel="stylesheet" href="./assets/chapters.css?v=db08e1b5a45c"><link rel="stylesheet" href="./assets/mobile.css?v=db08e1b5a45c"><script type="module" src="./assets/app.mjs?v=db08e1b5a45c"></script>
 </head>
 <body>
 <header><a class="brand" href="./">amor<span>&</span>amizade ♡</a><nav class="main-nav" aria-label="O que vamos fazer?"><button type="button" id="nav-map" aria-pressed="true"><span aria-hidden="true">🗺</span> Explorar</button><button type="button" id="nav-day" aria-pressed="false"><span aria-hidden="true">🎲</span> Começar o dia</button></nav></header>
@@ -31,12 +31,12 @@
  <details class="rules"><summary>Detalhes e critérios do trajeto</summary><p id="breakdown"></p><ol id="streets"></ol>
   <p>São estimativas para o RPG, até os acessos dos locais. As rotas seguem uma rede de vias traçada sobre os mapas ilustrados.</p>
   <div id="city-rules"><p><b>Por que a bicicleta às vezes empata com o carro?</b> O carro usa média urbana de 22 km/h e soma 4 minutos para saída e estacionamento. A bicicleta usa 14 km/h e soma 2 minutos para guardar. Em percursos curtos, isso pode equilibrar os tempos.</p><p>A moto usa a mesma média urbana do carro e soma 2 minutos para preparação e estacionamento. Carro, moto e ônibus usam apenas vias de veículos; o acesso final ao prédio é feito a pé.</p><p>A pé: 4,5 km/h. Ônibus: 18 km/h, paradas e 5–12 minutos de espera por embarque. Uma troca de linha acrescenta outra espera. As linhas U1, U2 e U3 são propostas para o cenário.</p><p>Escala proposta da cidade: 2 m por pixel do mapa original. Sem previsão de trânsito em tempo real.</p></div>
-  <p id="campus-rules" hidden>No campus, os trajetos são apenas a pé, a 4,5 km/h, por passeios e travessias desenhados. Os pontos indicam acessos externos. A escala de 0,9 m por pixel é aproximada; não inclui corredores ou andares internos. Os setores sem nome no mapa original foram detalhados para o RPG.</p>
+  <p id="campus-rules" hidden>No campus, os trajetos são apenas a pé, a 4,5 km/h, por passeios e travessias desenhados. O campo de futebol comum aos dois mapas serve de referência para a escala: ampliar a imagem não aumenta a distância física. Os pontos indicam acessos externos; não inclui corredores ou andares internos. Como os mapas são ilustrados, distâncias e tempos são aproximados.</p>
  </details>
  <button id="explore-campus" class="secondary full-width" type="button">Explorar a faculdade <span aria-hidden="true">↗</span></button>
 </section>
 <section class="map-area" aria-label="Mapa e percurso">
- <div class="map-heading"><span id="trip-heading">Casa da Bianca → Fisioterapia</span><span id="map-caption">Cidade universitária</span></div>
+ <div class="map-heading"><span id="trip-heading">Casa da Bianca → Universidade · portão leste</span><span id="map-caption">Cidade universitária</span></div>
  <div class="map-shell" id="map-shell">
   <div class="viewport" id="viewport" tabindex="0" role="group" aria-label="Mapa do trajeto. Arraste para mover; use os botões ou as teclas mais e menos para ampliar. As setas movem o mapa.">
    <div class="stage" id="stage">
